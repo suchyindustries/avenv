@@ -1,6 +1,6 @@
 # this is Windows version
 # open your powershell
-# type 'notepad' $profile
+# type 'notepad $profile'
 # add this
 
 function avenv {
