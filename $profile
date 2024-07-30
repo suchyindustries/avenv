@@ -1,0 +1,38 @@
+# this is Windows version
+# open your powershell
+# type 'notepad' $profile
+# add this
+
+function avenv {
+    $originalDir = Get-Location  # Store the original directory
+    $currentDir = $originalDir
+    $found = $false
+
+    while ($true) {
+        # Check if .venv folder exists in the current directory
+        if (Test-Path -Path "$currentDir\.venv") {
+            # Activate the virtual environment
+            & "$currentDir\.venv\Scripts\Activate.ps1"
+            $found = $true
+            break
+        } else {
+            # Move to the parent directory
+            $parentDir = [System.IO.Directory]::GetParent($currentDir)
+            
+            if ($parentDir -eq $null) {
+                # Reached the root directory, stop searching
+                break
+            }
+
+            $currentDir = $parentDir.FullName
+            Set-Location $currentDir
+        }
+    }
+
+    # Return to the original directory
+    Set-Location $originalDir
+
+    if (-not $found) {
+        Write-Output "The .venv folder does not exist in the current or any parent directory."
+    }
+}
