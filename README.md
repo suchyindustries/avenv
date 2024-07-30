@@ -21,7 +21,7 @@ avenv is a shell function that:
 **Installation:**
 
 1. **Copy the appropriate script:** 
-   * **Linux/macOS:**  Copy the `bashrc` content to the end of your `.bashrc` file. (accessible by running `nano ~/.bashrc` in PowerShell).
+   * **Linux/macOS:**  Copy the `bashrc` content to the end of your `.bashrc` file. (accessible by running `nano ~/.bashrc` in terminal).
    * **Windows:**  Copy the `$profile` content to your PowerShell profile file (accessible by running `notepad $profile` in PowerShell).
 
 2. **Source your profile:**
