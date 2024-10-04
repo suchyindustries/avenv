@@ -1,54 +1,77 @@
-## avenv: Lazy Programmer's Delight for Virtual Environments
+## avenv: Advanced Virtual Environment Management Tool
 
-**Tired of manually activating your virtual environments?**  avenv makes your life easier by automatically finding and activating the nearest `.venv` folder for you. 
+**Effortlessly manage your Python virtual environments** with `avenv`, a powerful utility designed to locate and activate the nearest virtual environment, simplifying your workflow and boosting productivity.
 
-**Features:**
+### Key Features:
 
-* **Simple:**  Just run `avenv` and it does the rest.
-* **Automatic:**  Automatically searches up the directory tree for your `.venv`.
-* **Cross-Platform:**  Works on both Linux/macOS and Windows.
+* **Streamlined Activation:** Run `avenv` and let it handle the rest, no manual activation required.
+* **Automatic Environment Detection:** Seamlessly searches up the directory tree for any folder with a typical virtual environment structure and activates it.
+* **Flexible Environment Creation:** Quickly create a new virtual environment with `avenv new [name]`—fully customizable to suit your project needs.
+* **Cross-Platform Compatibility:** Fully operational on both Linux/macOS and Windows, ensuring seamless usage across environments.
 
-**How it works:**
+### How It Works:
 
-avenv is a shell function that:
+`avenv` is a shell function that:
 
-1. **Starts at your current directory.**
-2. **Looks for a `.venv` folder.**
-3. **If found, activates the virtual environment.**
-4. **If not found, it moves up one directory and repeats.**
-5. **If it reaches the root directory without finding `.venv`, it informs you.**
+1. **Initiates at the Current Directory**: It begins searching from your current location.
+2. **Searches for a Virtual Environment**: Scans for folders that contain the typical virtual environment structure (`bin/activate` or `Scripts/Activate.ps1`).
+3. **Activates if Found**: Activates the virtual environment once located.
+4. **Continues Searching if Not Found**: Moves up to the parent directory and repeats until the root directory is reached.
+5. **Provides Feedback**: If no virtual environment is found, informs the user accordingly.
 
-**Installation:**
+### Installation Instructions:
 
-1. **Copy the appropriate script:** 
-   * **Linux/macOS:**  Copy the `bashrc` content to the end of your `.bashrc` file. (accessible by running `nano ~/.bashrc` in terminal).
-   * **Windows:**  Copy the `$profile` content to your PowerShell profile file (accessible by running `notepad $profile` in PowerShell).
+1. **Add the Function to Your Terminal Profile:**
+   
+   * **Linux/macOS:** Copy the `bashrc` script to the end of your `.bashrc` or `.zshrc` file (e.g., run `nano ~/.bashrc` in your terminal).
+   * **Windows:** Add the script to your PowerShell profile file (`notepad $profile` in PowerShell).
 
-2. **Source your profile:**
-   * **Linux/macOS:**  Run `source ~/.bashrc`.
-   * **Windows:**  Close and reopen PowerShell.
+   ```sh
+   # Add the following to your terminal profile (Linux/macOS)
+   function avenv {
+       # Implementation here
+   }
+   ```
 
-**Usage:**
+   ```powershell
+   # Windows PowerShell implementation
+   function avenv {
+       # Implementation here
+   }
+   ```
 
-1. **Navigate to your project directory.**
-2. **Run `avenv` in your terminal.**
+2. **Apply Changes to Your Profile:**
+   * **Linux/macOS:** Execute `source ~/.bashrc` or `source ~/.zshrc` to apply the changes.
+   * **Windows:** Close and reopen PowerShell to apply the modifications.
 
-**Example:**
+### Usage Guide:
 
-Let's say you have a project structure like this:
+1. **Navigate to Your Project Directory:** Use `cd` to move to your project directory.
+2. **Activate the Environment:** Run `avenv` in your terminal. `avenv` will automatically find and activate the nearest virtual environment.
+
+### Creating a New Virtual Environment:
+
+* **Default Environment Creation:** Run `avenv new` to create a new virtual environment named `.venv` in the current directory.
+* **Custom Environment Creation:** Specify a custom name with `avenv new [name]`.
+
+### Example:
+
+Imagine the following project structure:
 
 ```
 project_folder/
 ├── .venv/
 │   └── bin/
 │       ├── activate
-│       └── ... 
+│       └── ...
 ├── src/
 │   ├── ...
 └── tests/
     ├── ...
 ```
 
-If you're in the `tests` directory and run `avenv`, it will automatically find and activate the `.venv` in the `project_folder` directory. 
+If you are located in the `tests` directory and execute `avenv`, the tool will identify and activate the `.venv` located in the `project_folder` directory.
 
-**Enjoy your newfound laziness!** 
+### Embrace Effortless Virtual Environment Management
+
+`avenv` empowers developers by streamlining the activation and management of virtual environments, enabling you to focus on what matters most—building amazing software.
