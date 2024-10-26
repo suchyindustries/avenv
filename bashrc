@@ -24,7 +24,7 @@ avenv() {
   # Default behavior: search for a virtual environment in current or parent directories
   while true; do
     # Check if any folder in current directory has a typical venv folder structure
-    for dir in "$current_dir"/*; do
+    for dir in "$current_dir"/.venv "$current_dir"/*; do
       if [ -d "$dir/bin" ] && [ -f "$dir/bin/activate" ]; then
         # Activate the virtual environment
         source "$dir/bin/activate"
@@ -37,12 +37,11 @@ avenv() {
     parent_dir=$(dirname "$current_dir")
 
     # If reached the root directory, stop searching
-    if [ "$parent_dir" == "/" ]; then
+    if [ "$parent_dir" == "$current_dir" ]; then
       break
     fi
 
     current_dir="$parent_dir"
-    cd "$current_dir"
   done
 
   # Return to the original directory
@@ -50,6 +49,6 @@ avenv() {
 
   # If no venv found
   if [ "$found" == false ]; then
-    echo "No virtual environment found with the typical venv folder structure in the current or any parent directory. \n to create new use avenv new [envname] "
+    echo -e "No virtual environment found with the typical venv folder structure in the current or any parent directory.\nTo create a new one, use 'avenv new [envname]'."
   fi
 }
