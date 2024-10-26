@@ -24,7 +24,7 @@ avenv() {
   # Default behavior: search for a virtual environment in current or parent directories
   while true; do
     # Check if any folder in current directory has a typical venv folder structure
-    for dir in "$current_dir"/.venv "$current_dir"/*; do
+    for dir in "$current_dir"/* "$current_dir"/.*; do
       if [ -d "$dir/bin" ] && [ -f "$dir/bin/activate" ]; then
         # Activate the virtual environment
         source "$dir/bin/activate"
