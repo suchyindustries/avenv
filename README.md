@@ -1,77 +1,214 @@
-## avenv: Advanced Virtual Environment Management Tool
+# avenv - Advanced Virtual Environment Management
 
-**Effortlessly manage your Python virtual environments** with `avenv`, a powerful utility designed to locate and activate the nearest virtual environment, simplifying your workflow and boosting productivity.
+> **Effortlessly manage Python virtual environments with intelligent auto-discovery**
 
-### Key Features:
+`avenv` is a robust bash function that automatically finds and activates the nearest Python virtual environment in your project hierarchy. No more manual navigation or remembering complex paths - just type `avenv` and get to work.
 
-* **Streamlined Activation:** Run `avenv` and let it handle the rest, no manual activation required.
-* **Automatic Environment Detection:** Seamlessly searches up the directory tree for any folder with a typical virtual environment structure and activates it.
-* **Flexible Environment Creation:** Quickly create a new virtual environment with `avenv new [name]`—fully customizable to suit your project needs.
-* **Cross-Platform Compatibility:** Fully operational on both Linux/macOS and Windows, ensuring seamless usage across environments.
+## ✨ Key Features
 
-### How It Works:
+- **🔍 Smart Discovery**: Automatically searches upward through directories to find virtual environments
+- **⚡ Instant Activation**: One command to find and activate your project's venv
+- **🛠️ Environment Management**: Create, fix, and manage virtual environments seamlessly  
+- **🔧 Auto-Repair**: Intelligent fixing of broken or moved virtual environments
+- **📁 Flexible Naming**: Support for custom venv names and locations
+- **🛡️ Error Handling**: Graceful handling of missing dependencies and edge cases
 
-`avenv` is a shell function that:
+## 🚀 Installation
 
-1. **Initiates at the Current Directory**: It begins searching from your current location.
-2. **Searches for a Virtual Environment**: Scans for folders that contain the typical virtual environment structure (`bin/activate` or `Scripts/Activate.ps1`).
-3. **Activates if Found**: Activates the virtual environment once located.
-4. **Continues Searching if Not Found**: Moves up to the parent directory and repeats until the root directory is reached.
-5. **Provides Feedback**: If no virtual environment is found, informs the user accordingly.
+### Prerequisites
 
-### Installation Instructions:
+- **Linux Mint** (tested and verified)
+- **Bash shell** 
+- **Python 3.6+** with `venv` module
+- **Standard Unix utilities** (dirname, mktemp, grep, etc.)
 
-1. **Add the Function to Your Terminal Profile:**
+### Quick Installation
+
+1. **Download the avenv function**:
+   ```bash
+   curl -o ~/.avenv.bash https://raw.githubusercontent.com/suchyindustries/avenv/main/avenv.bash
+   ```
+
+2. **Add to your shell profile**:
+   ```bash
+   # For bash users
+   echo "source ~/.avenv.bash" >> ~/.bashrc
    
-   * **Linux/macOS:** Copy the `bashrc` script to the end of your `.bashrc` or `.zshrc` file (e.g., run `nano ~/.bashrc` in your terminal).
-   * **Windows:** Add the script to your PowerShell profile file (`notepad $profile` in PowerShell).
-
-   ```sh
-   # Add the following to your terminal profile (Linux/macOS)
-   function avenv {
-       # Implementation here
-   }
+   # For zsh users (if using zsh on Linux Mint)
+   echo "source ~/.avenv.bash" >> ~/.zshrc
    ```
 
-   ```powershell
-   # Windows PowerShell implementation
-   function avenv {
-       # Implementation here
-   }
+3. **Reload your shell**:
+   ```bash
+   source ~/.bashrc  # or source ~/.zshrc if using zsh
    ```
 
-2. **Apply Changes to Your Profile:**
-   * **Linux/macOS:** Execute `source ~/.bashrc` or `source ~/.zshrc` to apply the changes.
-   * **Windows:** Close and reopen PowerShell to apply the modifications.
+### Manual Installation
 
-### Usage Guide:
+Copy the `avenv()` function from `avenv.bash` and paste it into your `~/.bashrc` or `~/.zshrc` file, then reload your shell.
 
-1. **Navigate to Your Project Directory:** Use `cd` to move to your project directory.
-2. **Activate the Environment:** Run `avenv` in your terminal. `avenv` will automatically find and activate the nearest virtual environment.
+## 📖 Usage
 
-### Creating a New Virtual Environment:
+### Basic Commands
 
-* **Default Environment Creation:** Run `avenv new` to create a new virtual environment named `.venv` in the current directory.
-* **Custom Environment Creation:** Specify a custom name with `avenv new [name]`.
+| Command | Description |
+|---------|-------------|
+| `avenv` | Find and activate nearest virtual environment |
+| `avenv new [name]` | Create new virtual environment (default: `.venv`) |
+| `avenv fix` | Repair broken/moved virtual environment |
+| `avenv deactivate` | Deactivate current virtual environment |
+| `avenv help` | Display help message |
 
-### Example:
+### Common Workflows
 
-Imagine the following project structure:
-
+#### 🔄 Activate Existing Environment
+```bash
+cd /path/to/your/project
+avenv
+# → Automatically finds and activates .venv, venv, or any other venv in project hierarchy
 ```
-project_folder/
-├── .venv/
-│   └── bin/
-│       ├── activate
-│       └── ...
+
+#### 🆕 Create New Environment
+```bash
+# Create default .venv
+avenv new
+
+# Create custom named environment
+avenv new myproject-env
+```
+
+#### 🛠️ Fix Broken Environment
+```bash
+avenv fix
+# → Analyzes environment, freezes packages, offers to recreate with same packages
+```
+
+## 💡 Examples
+
+### Project Structure Example
+```
+my-project/
+├── .venv/              # ← avenv will find this
+│   └── bin/activate
 ├── src/
-│   ├── ...
-└── tests/
-    ├── ...
+│   └── myapp/
+├── tests/              # ← Running 'avenv' from here works
+└── docs/               # ← Running 'avenv' from here works too
 ```
 
-If you are located in the `tests` directory and execute `avenv`, the tool will identify and activate the `.venv` located in the `project_folder` directory.
+### Interactive Repair Session
+```bash
+$ avenv fix
+Found virtual environment at: /home/user/project/.venv
+Warning: The venv seems to have been moved.
+  Expected creation command: /usr/bin/python3 -m venv /home/user/project/.venv
+  Actual creation command: /usr/bin/python3 -m venv /old/path/project/.venv
+Freezing installed packages...
+Found the following packages:
+requests==2.28.1
+numpy==1.24.0
+pandas==1.5.2
 
-### Embrace Effortless Virtual Environment Management
+Reinstall these packages to fix the environment? (y/N) y
+Fixing environment by recreating it and reinstalling packages...
+Environment fixed successfully.
+```
 
-`avenv` empowers developers by streamlining the activation and management of virtual environments, enabling you to focus on what matters most—building amazing software.
+## 🏗️ How It Works
+
+1. **Directory Traversal**: Starting from current directory, searches upward through parent directories
+2. **Environment Detection**: Looks for any directory containing `bin/activate` file
+3. **Smart Activation**: Activates the first valid virtual environment found
+4. **Fallback Guidance**: Provides clear instructions if no environment is found
+
+## ⚙️ Advanced Configuration
+
+### Environment Detection Logic
+`avenv` detects virtual environments by looking for the `bin/activate` script. It will find:
+- `.venv/` (most common)
+- `venv/`
+- `env/` 
+- Any custom-named directory with proper venv structure
+
+### Customization Options
+The function can be modified to:
+- Skip certain directory patterns
+- Prefer specific environment names
+- Add custom validation logic
+- Include additional setup commands
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**"python3 command not found"**
+- Install Python 3: `sudo apt install python3` (Linux Mint/Ubuntu/Debian)
+
+**"No virtual environment found"**
+- Create one: `avenv new`
+- Check if you're in the right project directory
+
+**Environment activation fails**
+- Try fixing: `avenv fix`
+- Manually recreate if needed: `rm -rf .venv && avenv new`
+
+**Permission errors**
+- Ensure you have write permissions in the project directory
+- Check that Python has permission to create files
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **🐛 Bug Reports**: Open an issue with detailed reproduction steps
+2. **💡 Feature Requests**: Describe your use case and proposed solution  
+3. **🔧 Code Contributions**: Fork, create feature branch, submit PR
+4. **📚 Documentation**: Improve examples, fix typos, add use cases
+
+### Development Setup
+```bash
+git clone https://github.com/suchyindustries/avenv.git
+cd avenv
+# Test the function in a new shell session
+bash -c "source avenv.bash && avenv help"
+```
+
+## 📋 Requirements
+
+- **OS**: Linux Mint (tested and verified)
+- **Shell**: Bash 4.0+ or Zsh 5.0+
+- **Python**: 3.6+ with venv module
+- **Tools**: Standard POSIX utilities
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see below for details:
+
+```
+MIT License
+
+Copyright (c) 2024 Suchy Industries
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+---
+
+**Made with ❤️ by [Suchy Industries](https://github.com/suchyindustries) and AI's**
+
+*Simplifying Python development workflows, one environment at a time.*
