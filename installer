@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# avenv installation script
+
+echo -e "\033[36mChecking dependencies...\033[0m"
+
+NEEDS_PYTHON=0
+NEEDS_VENV=0
+
+# Check if Python 3 is installed
+if ! command -v python3 >/dev/null 2>&1; then
+    NEEDS_PYTHON=1
+fi
+
+# Check if the venv module (specifically ensurepip) is available.
+# On Debian/Ubuntu/Mint, python3 is often installed without the full venv package.
+if [ "$NEEDS_PYTHON" -eq 0 ]; then
+    if ! python3 -c "import ensurepip" >/dev/null 2>&1; then
+        NEEDS_VENV=1
+    fi
+else
+    NEEDS_VENV=1
+fi
+
+# Prompt and install missing dependencies
+if [ "$NEEDS_PYTHON" -eq 1 ] || [ "$NEEDS_VENV" -eq 1 ]; then
+    echo -e "\033[33mMissing dependencies detected:\033[0m"
+    [ "$NEEDS_PYTHON" -eq 1 ] && echo "  - python3"
+    [ "$NEEDS_VENV" -eq 1 ] && echo "  - python3-venv"
+
+    if command -v apt-get >/dev/null 2>&1; then
+        echo ""
+        read -p "Would you like to install them now? (Requires sudo) (y/N) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "\n\033[36mUpdating package list...\033[0m"
+            sudo apt-get update
+            
+            PACKAGES=""
+            [ "$NEEDS_PYTHON" -eq 1 ] && PACKAGES="$PACKAGES python3"
+            [ "$NEEDS_VENV" -eq 1 ] && PACKAGES="$PACKAGES python3-venv"
+            
+            echo -e "\033[36mInstalling: $PACKAGES...\033[0m"
+            sudo apt-get install -y $PACKAGES
+            
+            echo -e "\033[32mDependencies installed successfully!\033[0m\n"
+        else
+            echo -e "\n\033[31mSkipping dependency installation. 'avenv' may not work correctly until these are installed.\033[0m\n"
+        fi
+    else
+        echo -e "\n\033[31mYour system does not use 'apt'. Please install the missing dependencies manually using your package manager.\033[0m\n"
+    fi
+else
+    echo -e "\033[32mAll dependencies are met!\033[0m\n"
+fi
+
+echo -e "\033[36mDownloading avenv...\033[0m"
+curl -fsSL -o ~/.avenv.bash https://raw.githubusercontent.com/suchyindustries/avenv/main/avenv.bash
+
+echo -e "\033[36mDownloading configuration file...\033[0m"
+mkdir -p ~/.config
+curl -fsSL -o ~/.config/avenv.conf https://raw.githubusercontent.com/suchyindustries/avenv/main/avenv.conf 2>/dev/null
+
+# Check what shell profile to update securely (Targeting Bash)
+PROFILE="$HOME/.bashrc"
+if [ ! -f "$PROFILE" ] && [ -n "$ZSH_VERSION" ]; then
+    PROFILE="$HOME/.zshrc"
+fi
+
+echo -e "\033[36mAdding to $PROFILE...\033[0m"
+
+# Only add it if it's not already there
+if ! grep -q "source ~/.avenv.bash" "$PROFILE" 2>/dev/null; then
+    echo -e '\n# avenv\nsource ~/.avenv.bash' >> "$PROFILE"
+fi
+
+echo -e "\033[32m✨ avenv installed successfully!\033[0m"
+echo -e "You can configure avenv behavior in \033[36m~/.config/avenv.conf\033[0m"
+echo -e "\nTo start using it right now, run:\n"
+echo -e "    \033[1msource $PROFILE\033[0m\n"
